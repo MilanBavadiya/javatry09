@@ -1,24 +1,14 @@
-# Use the official Maven image to build the application
-FROM maven:3.8.5-openjdk-17 AS build
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:17
 
-# Set the working directory
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /usr/local/app
 
-# Copy the Maven project files
-COPY pom.xml .
-COPY src ./src
+# Copy the JAR file from the host to the container
+COPY /home/ubuntu/javatry09/Milan/target/myapp.jar /usr/local/app/myapp.jar
 
-# Build the application
-RUN mvn clean package
-
-# Use the official Tomcat image to run the application
-FROM tomcat:10.1-jdk17
-
-# Copy the WAR file from the build stage to the Tomcat webapps directory
-COPY --from=build /app/target/simple-java-web-app.war /usr/local/tomcat/webapps/
-
-# Expose port 8080
+# Expose the port the application runs on (change 8080 if your app uses a different port)
 EXPOSE 8080
 
-# Start Tomcat
-CMD ["catalina.sh", "run"]
+# Run the JAR file
+ENTRYPOINT ["java", "-jar", "/usr/local/app/myapp.jar"]
